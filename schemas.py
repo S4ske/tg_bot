@@ -9,7 +9,8 @@ T = TypeVar('T')
 main_keyboard_markup = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text='Мои данные'),
                                                       KeyboardButton(text='Выбрать путевой лист')],
                                                      [KeyboardButton(text='Мои задания'),
-                                                      KeyboardButton(text='Мои задания на сегодня')]])
+                                                      KeyboardButton(text='Мои задания на сегодня')],
+                                                     [KeyboardButton(text='Выйти из аккаунта')]])
 
 
 class Credentials(StatesGroup):

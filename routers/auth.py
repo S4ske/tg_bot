@@ -1,5 +1,5 @@
-from aiogram import Router
-from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove, Message
+from aiogram import Router, F
+from aiogram.types import ReplyKeyboardRemove, Message
 from aiogram.fsm.context import FSMContext
 
 import schemas
@@ -28,3 +28,9 @@ async def password(message: Message, state: FSMContext) -> None:
     else:
         await state.clear()
         await message.answer('Неправильный логин или пароль')
+
+
+@router.message(Menu.main, F.text.casefold() == 'выйти из аккаунта')
+async def logout(message: Message, state: FSMContext):
+    await state.clear()
+    await message.answer('Вы успешно вышли', reply_markup=ReplyKeyboardRemove())

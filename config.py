@@ -4,3 +4,4 @@ from dotenv import load_dotenv
 load_dotenv()
 
 BOT_TOKEN = getenv('BOT_TOKEN')
+REDIS_HOST = getenv('REDIS_HOST')
