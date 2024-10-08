@@ -60,3 +60,15 @@ class API:
                     return schemas.ResponseWithGet[schemas.Waybill](**await response.json())
                 else:
                     return None
+
+
+    # пыталась написать запрос для вывода описания задания
+    @staticmethod
+    async def get_task(token: str, id_task: int) -> schemas.ResponseWithGet[schemas.Task] | None:
+        async with ClientSession() as session:
+            async with session.get(API.url + '/task/{}'.format(id_task),
+                                   headers={'x-access-token': token}) as response:
+                if str(response.status)[0] != '5':
+                    return schemas.ResponseWithGet[schemas.Task](**await response.json())
+                else:
+                    return None

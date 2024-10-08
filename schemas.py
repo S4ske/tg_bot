@@ -21,6 +21,8 @@ class Credentials(StatesGroup):
 class Menu(StatesGroup):
     main = State()
     checking_waybill = State()
+    # добавила поле для выбора задания
+    checking_task = State()
 
 
 class AnswerType(Enum):

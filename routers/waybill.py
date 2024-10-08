@@ -5,6 +5,7 @@ from schemas import Menu
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
 from aiogram.fsm.context import FSMContext
 from api import API
+import beauty_print
 
 router = Router()
 
@@ -36,7 +37,7 @@ async def check_calendar_task(message: Message, state: FSMContext) -> None:
     await state.set_state(Menu.main)
     if resp.success:
         waybill = resp.get
-        await message.answer(str(waybill.model_dump()), reply_markup=schemas.main_keyboard_markup)
+        await message.answer(beauty_print.print_Waybill(waybill), reply_markup=schemas.main_keyboard_markup)
     else:
         await state.set_state(Menu.main)
         await message.answer('Что-то пошло не так')

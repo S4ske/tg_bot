@@ -12,7 +12,7 @@ from aiogram.fsm.storage.redis import RedisStorage
 from routers import auth, title, waybill
 
 bot = Bot(BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
-main_dispatcher = Dispatcher(storage=RedisStorage(redis=Redis(host=REDIS_HOST)))
+main_dispatcher = Dispatcher()
 
 
 @main_dispatcher.message(CommandStart())
