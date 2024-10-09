@@ -23,9 +23,8 @@ async def start(message: Message, state: FSMContext) -> None:
 
 async def main():
     await bot.set_my_commands([BotCommand(command='/start', description='Начать работу с ботом')])
-    main_dispatcher.include_router(auth.router)
-    main_dispatcher.include_router(title.router)
-    main_dispatcher.include_router(waybill.router)
+    main_dispatcher.include_routers(auth.router, title.router, waybill.router)
+    await bot.delete_webhook(drop_pending_updates=True)
     await main_dispatcher.start_polling(bot)
 
 
