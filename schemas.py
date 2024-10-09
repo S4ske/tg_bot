@@ -1,16 +1,9 @@
-from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 from pydantic import BaseModel
 from typing import TypeVar, Generic
 from enum import Enum
 from aiogram.fsm.state import State, StatesGroup
 
 T = TypeVar('T')
-
-main_keyboard_markup = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text='Мои данные'),
-                                                      KeyboardButton(text='Выбрать путевой лист')],
-                                                     [KeyboardButton(text='Мои задания'),
-                                                      KeyboardButton(text='Мои задания на сегодня')],
-                                                     [KeyboardButton(text='Выйти из аккаунта')]])
 
 
 class Credentials(StatesGroup):
@@ -21,6 +14,7 @@ class Credentials(StatesGroup):
 class Menu(StatesGroup):
     main = State()
     checking_waybill = State()
+    waybill = State()
 
 
 class AnswerType(Enum):

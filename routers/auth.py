@@ -1,10 +1,9 @@
 from aiogram import Router, F
 from aiogram.types import ReplyKeyboardRemove, Message
 from aiogram.fsm.context import FSMContext
-
-import schemas
 from schemas import Credentials, Menu
 from api import API
+from utils import main_keyboard_markup
 
 router = Router()
 
@@ -24,13 +23,13 @@ async def password(message: Message, state: FSMContext) -> None:
     if login_response and login_response.success:
         await state.set_state(Menu.main)
         await state.update_data(token=login_response.token)
-        await message.answer('Вы успешно авторизировались', reply_markup=schemas.main_keyboard_markup)
+        await message.answer('Вы успешно авторизировались', reply_markup=main_keyboard_markup)
     else:
         await state.clear()
         await message.answer('Неправильный логин или пароль')
 
 
-@router.message(Menu.main, F.text.casefold() == 'выйти из аккаунта')
+@router.message(F.text.casefold() == 'выйти из аккаунта')
 async def logout(message: Message, state: FSMContext):
     await state.clear()
     await message.answer('Вы успешно вышли', reply_markup=ReplyKeyboardRemove())
