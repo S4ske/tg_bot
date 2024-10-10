@@ -1,5 +1,5 @@
 from aiogram import Router, F
-from aiogram.types import Message
+from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
 from api import API
 from states import Menu
 from aiogram.fsm.context import FSMContext
@@ -23,6 +23,34 @@ async def get_calendar_tasks(message: Message, state: FSMContext) -> None:
                 await message.answer(str(task.model_dump()))
     else:
         await message.answer('Что-то пошло не так')
+
+
+
+# недоделанный неработающий метод для вывода описания задания
+
+
+@router.message(Menu.checking_task)
+async def check_calendar_task(message: Message, state: FSMContext) -> None:
+    data = await state.get_data()
+    try:
+        resp = await API.get_task(data['token'], int(message.text))
+    except:
+        await message.answer('Введите номер задания')
+        return
+    await state.set_state(Menu.main)
+    if resp.success:
+        task = resp.get
+        await message.answer(beauty_print.print_Task(task), reply_markup=schemas.main_keyboard_markup)
+    else:
+        await state.set_state(Menu.main)
+        await message.answer('Что-то пошло не так')
+
+
+
+
+
+
+
 
 
 @router.message(Menu.main, F.text.casefold() == 'мои задания на сегодня')

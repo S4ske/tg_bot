@@ -13,7 +13,7 @@ from routers import auth, title, waybill, checklist
 from utils import main_keyboard_markup
 
 bot = Bot(BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
-main_dispatcher = Dispatcher(storage=RedisStorage(redis=Redis(host=REDIS_HOST)))
+main_dispatcher = Dispatcher()
 
 
 @main_dispatcher.message(CommandStart())
