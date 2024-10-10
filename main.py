@@ -9,7 +9,7 @@ from aiogram.types import Message, ReplyKeyboardRemove, BotCommand
 from aiogram.fsm.context import FSMContext
 from states import Credentials, Menu
 from aiogram.fsm.storage.redis import RedisStorage
-from routers import auth, title, waybill, checklist
+from routers import auth, title, waybill, checklist, tasks
 from utils import main_keyboard_markup
 
 bot = Bot(BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
@@ -31,7 +31,7 @@ async def start(message: Message, state: FSMContext) -> None:
 async def main():
     await bot.set_my_commands([BotCommand(command='/start', description='Начать работу с ботом'),
                                BotCommand(command='/main_menu', description='Вернуться в главное меню')])
-    main_dispatcher.include_routers(auth.router, title.router, waybill.router, checklist.router)
+    main_dispatcher.include_routers(auth.router, title.router, waybill.router, checklist.router, tasks.router)
     await bot.delete_webhook(drop_pending_updates=True)
     await main_dispatcher.start_polling(bot)
 

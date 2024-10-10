@@ -166,3 +166,17 @@ class TaskResult(BaseModel):
 class DriverResponse(ResponseWithGet[list[CalendarTask]]):
     count: int | None
     current: list[CalendarTask] | None
+
+
+class TaskResponse(DefaultResponse):
+    task: list[Task] | None
+    taskResult: list[TaskResult] | None
+
+
+class IntermediateTaskResultIn(BaseModel):
+    arrivalTime: str
+    count: str | None = None
+    distance: str
+    idTask: int
+    idTaskResult: str | None = None
+    transported: str

@@ -1,4 +1,4 @@
-from aiohttp import ClientSession, ClientResponse
+from aiohttp import ClientSession
 import schemas
 from typing import Any, Callable, TypeVar, Type
 from pydantic import BaseModel
@@ -49,8 +49,7 @@ class API:
 
     @staticmethod
     async def login(login: str, password: str) -> schemas.LoginResponse | None:
-        response = await API.send_post_request('/login',
-                                               body={'login': login, 'password': password})
+        response = await API.send_post_request('/login', body={'login': login, 'password': password})
         return await API._get_return(response, schemas.LoginResponse)
 
     @staticmethod
@@ -66,26 +65,34 @@ class API:
             params['limit'] = limit
         if offset:
             params['offset'] = offset
-        response = await API.send_get_request('/driver', headers={'x-access-token': token},
-                                              params=params)
+        response = await API.send_get_request('/driver', headers={'x-access-token': token}, params=params)
         return await API._get_return(response, schemas.DriverResponse)
 
     @staticmethod
     async def get_current_calendar_tasks(token: str) -> schemas.ResponseWithGet[list[schemas.CalendarTask]] | None:
-        response = await API.send_get_request('/driver-current',
-                                              headers={'x-access-token': token})
+        response = await API.send_get_request('/driver-current', headers={'x-access-token': token})
         return await API._get_return(response, schemas.ResponseWithGet[list[schemas.CalendarTask]])
 
     @staticmethod
     async def get_waybill(token: str, id_waybill: int) -> schemas.ResponseWithGet[schemas.Waybill] | None:
-        response = await API.send_get_request('/waybill/{}'.format(id_waybill),
-                                              headers={'x-access-token': token})
+        response = await API.send_get_request(f'/waybill/{id_waybill}', headers={'x-access-token': token})
         return await API._get_return(response, schemas.ResponseWithGet[schemas.Waybill])
 
     @staticmethod
+    async def start_waybill(token: str, id_waybill: int, mileage_start: int) -> schemas.DefaultResponse | None:
+        response = await API.send_put_request(f'/waybill/{id_waybill}/start', headers={'x-access-token': token},
+                                              body={'mileageStart': mileage_start})
+        return await API._get_return(response, schemas.DefaultResponse)
+
+    @staticmethod
+    async def stop_waybill(token: str, id_waybill: int, mileage_end: int) -> schemas.DefaultResponse | None:
+        response = await API.send_put_request(f'/waybill/{id_waybill}/stop', headers={'x-access-token': token},
+                                              body={'mileageStart': mileage_end})
+        return await API._get_return(response, schemas.DefaultResponse)
+
+    @staticmethod
     async def get_checklists(token: str, id_waybill: int) -> schemas.ResponseWithGet[list[schemas.Checklist]] | None:
-        response = await API.send_get_request(f'/waybill/{id_waybill}/c_list',
-                                              headers={'x-access-token': token})
+        response = await API.send_get_request(f'/waybill/{id_waybill}/c_list', headers={'x-access-token': token})
         return await API._get_return(response, schemas.ResponseWithGet[list[schemas.Checklist]])
 
     @staticmethod
@@ -113,4 +120,29 @@ class API:
     async def stop_checklist(token: str, id_waybill: int, id_ChWB: int) -> schemas.DefaultResponse | None:
         response = await API.send_put_request(f'/waybill/{id_waybill}/c_list/{id_ChWB}/stop',
                                               headers={'x-access-token': token})
+        return await API._get_return(response, schemas.DefaultResponse)
+
+    @staticmethod
+    async def get_tasks(token: str, id_waybill: int) -> schemas.TaskResponse | None:
+        response = await API.send_get_request(f'/waybill/{id_waybill}/task', headers={'x-access-token': token})
+        return await API._get_return(response, schemas.TaskResponse)
+
+    @staticmethod
+    async def add_task_result(token: str, id_waybill: int, result: schemas.IntermediateTaskResultIn)\
+            -> schemas.DefaultResponse | None:
+        response = await API.send_put_request(f'/waybill/{id_waybill}/task_result', headers={'x-access-token': token},
+                                              body=result.model_dump())
+        return await API._get_return(response, schemas.DefaultResponse)
+
+    @staticmethod
+    async def remove_task_result(token: str, id_waybill: int, id_task_result: int) -> schemas.DefaultResponse | None:
+        response = await API.send_put_request(f'/waybill/{id_waybill}/task_result_remove',
+                                              headers={'x-access-token': token}, body={'idTaskResult': id_task_result})
+        return await API._get_return(response, schemas.DefaultResponse)
+
+    @staticmethod
+    async def stop_continue_task(token: str, id_waybill: int, id_task: int, is_finished: bool)\
+            -> schemas.DefaultResponse | None:
+        response = await API.send_put_request(f'/waybill/{id_waybill}/task_finish', headers={'x-access-token': token},
+                                              body={'idTask': id_task, 'isFinished': is_finished})
         return await API._get_return(response, schemas.DefaultResponse)

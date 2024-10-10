@@ -97,7 +97,7 @@ async def ask_question(message: Message, question: Question) -> None:
                              reply_markup=get_keyboard_markup_buttons(question.answerParam.buttonArr))
     else:
         await message.answer(question.question, reply_markup=default_checklist_markup)
-        await message.answer('Введите значаение:')
+        await message.answer('Введите значение')
 
 
 async def start_checklist(message: Message, state: FSMContext) -> bool:
