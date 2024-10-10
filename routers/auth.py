@@ -1,7 +1,7 @@
 from aiogram import Router, F
 from aiogram.types import ReplyKeyboardRemove, Message
 from aiogram.fsm.context import FSMContext
-from schemas import Credentials, Menu
+from states import Credentials, Menu
 from api import API
 from utils import main_keyboard_markup
 

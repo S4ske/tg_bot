@@ -1,62 +1,116 @@
-from aiohttp import ClientSession
+from aiohttp import ClientSession, ClientResponse
 import schemas
+from typing import Any, Callable, TypeVar, Type
+from pydantic import BaseModel
+
+T = TypeVar('T')
+
+
+class RawResponse(BaseModel):
+    status: int
+    data: dict | None
 
 
 class API:
     url = 'https://portal.skybuild.ru/api/1/app_worker'
 
     @staticmethod
-    async def login(login: str, password: str) -> schemas.LoginResponse | None:
+    async def _get_return(response: RawResponse, schema: Type[T]) -> T | None:
+        if str(response.status)[0] != '5':
+            return schema(**response.data)
+        else:
+            return None
+
+    @staticmethod
+    async def _send_request(method: Callable, request: str, body: dict[str, Any] = None, headers: dict[str, Any] = None,
+                            params: dict[str, Any] = None) -> RawResponse:
+        body = body if body else dict()
+        headers = headers if headers else dict()
+        params = params if params else dict()
         async with ClientSession() as session:
-            async with session.post(API.url + '/login',
-                                    json={'login': login, 'password': password}) as response:
-                if str(response.status)[0] != '5':
-                    return schemas.LoginResponse(**await response.json())
-                else:
-                    return None
+            async with method(session, API.url + request, json=body, headers=headers, params=params) as response:
+                return RawResponse(status=response.status, data=None if str(response.status)[0] == '5'
+                else await response.json())
+
+    @staticmethod
+    async def send_get_request(request: str, body: dict[str, Any] = None, headers: dict[str, Any] = None,
+                               params: dict[str, Any] = None) -> RawResponse:
+        return await API._send_request(ClientSession.get, request, body, headers, params)
+
+    @staticmethod
+    async def send_post_request(request: str, body: dict[str, Any] = None, headers: dict[str, Any] = None,
+                                params: dict[str, Any] = None) -> RawResponse:
+        return await API._send_request(ClientSession.post, request, body, headers, params)
+
+    @staticmethod
+    async def send_put_request(request: str, body: dict[str, Any] = None, headers: dict[str, Any] = None,
+                               params: dict[str, Any] = None) -> RawResponse:
+        return await API._send_request(ClientSession.put, request, body, headers, params)
+
+    @staticmethod
+    async def login(login: str, password: str) -> schemas.LoginResponse | None:
+        response = await API.send_post_request('/login',
+                                               body={'login': login, 'password': password})
+        return await API._get_return(response, schemas.LoginResponse)
 
     @staticmethod
     async def get_me(token: str) -> schemas.ResponseWithGet[schemas.UserInfo] | None:
-        async with ClientSession() as session:
-            async with session.get(API.url + '/me',
-                                   headers={'x-access-token': token}) as response:
-                if str(response.status)[0] != '5':
-                    return schemas.ResponseWithGet[schemas.UserInfo](**await response.json())
-                else:
-                    return None
+        response = await API.send_get_request('/me', headers={'x-access-token': token})
+        return await API._get_return(response, schemas.ResponseWithGet[schemas.UserInfo])
 
     @staticmethod
-    async def get_calendar_tasks(token: str, limit: int | None = None, offset: int | None = None)\
+    async def get_calendar_tasks(token: str, limit: int | None = None, offset: int | None = None) \
             -> schemas.DriverResponse | None:
-        async with ClientSession() as session:
-            params = {}
-            if limit:
-                params['limit'] = limit
-            if offset:
-                params['offset'] = offset
-            async with session.get(API.url + '/driver',
-                                   headers={'x-access-token': token}, params=params) as response:
-                if str(response.status)[0] != '5':
-                    return schemas.DriverResponse(**await response.json())
-                else:
-                    return None
+        params = {}
+        if limit:
+            params['limit'] = limit
+        if offset:
+            params['offset'] = offset
+        response = await API.send_get_request('/driver', headers={'x-access-token': token},
+                                              params=params)
+        return await API._get_return(response, schemas.DriverResponse)
 
     @staticmethod
     async def get_current_calendar_tasks(token: str) -> schemas.ResponseWithGet[list[schemas.CalendarTask]] | None:
-        async with ClientSession() as session:
-            async with session.get(API.url + '/driver-current',
-                                   headers={'x-access-token': token}) as response:
-                if str(response.status)[0] != '5':
-                    return schemas.ResponseWithGet[list[schemas.CalendarTask]](**await response.json())
-                else:
-                    return None
+        response = await API.send_get_request('/driver-current',
+                                              headers={'x-access-token': token})
+        return await API._get_return(response, schemas.ResponseWithGet[list[schemas.CalendarTask]])
 
     @staticmethod
     async def get_waybill(token: str, id_waybill: int) -> schemas.ResponseWithGet[schemas.Waybill] | None:
-        async with ClientSession() as session:
-            async with session.get(API.url + '/waybill/{}'.format(id_waybill),
-                                   headers={'x-access-token': token}) as response:
-                if str(response.status)[0] != '5':
-                    return schemas.ResponseWithGet[schemas.Waybill](**await response.json())
-                else:
-                    return None
+        response = await API.send_get_request('/waybill/{}'.format(id_waybill),
+                                              headers={'x-access-token': token})
+        return await API._get_return(response, schemas.ResponseWithGet[schemas.Waybill])
+
+    @staticmethod
+    async def get_checklists(token: str, id_waybill: int) -> schemas.ResponseWithGet[list[schemas.Checklist]] | None:
+        response = await API.send_get_request(f'/waybill/{id_waybill}/c_list',
+                                              headers={'x-access-token': token})
+        return await API._get_return(response, schemas.ResponseWithGet[list[schemas.Checklist]])
+
+    @staticmethod
+    async def get_checklist_questions(token: str, id_waybill: int, id_ChWB: int) \
+            -> schemas.ResponseWithGet[list[schemas.Question]] | None:
+        response = await API.send_get_request(f'/waybill/{id_waybill}/c_list/{id_ChWB}',
+                                              headers={'x-access-token': token})
+        return await API._get_return(response, schemas.ResponseWithGet[list[schemas.Question]])
+
+    @staticmethod
+    async def start_checklist(token: str, id_waybill: int, id_ChWB: int) -> schemas.ResponseWithGet[int] | None:
+        response = await API.send_post_request(f'/waybill/{id_waybill}/c_list/{id_ChWB}/start',
+                                               headers={'x-access-token': token})
+        return await API._get_return(response, schemas.ResponseWithGet[int])
+
+    @staticmethod
+    async def put_checklist_answer(token: str, id_waybill: int, id_ChWB: int, answer: str, question_id: int) \
+            -> schemas.DefaultResponse | None:
+        response = await API.send_put_request(f'/waybill/{id_waybill}/c_list/{id_ChWB}/answer',
+                                              headers={'x-access-token': token},
+                                              body={'answer': answer, 'questionId': question_id})
+        return await API._get_return(response, schemas.DefaultResponse)
+
+    @staticmethod
+    async def stop_checklist(token: str, id_waybill: int, id_ChWB: int) -> schemas.DefaultResponse | None:
+        response = await API.send_put_request(f'/waybill/{id_waybill}/c_list/{id_ChWB}/stop',
+                                              headers={'x-access-token': token})
+        return await API._get_return(response, schemas.DefaultResponse)

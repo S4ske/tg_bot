@@ -1,26 +1,8 @@
 from pydantic import BaseModel
 from typing import TypeVar, Generic
 from enum import Enum
-from aiogram.fsm.state import State, StatesGroup
 
 T = TypeVar('T')
-
-
-class Credentials(StatesGroup):
-    login = State()
-    password = State()
-
-
-class Menu(StatesGroup):
-    main = State()
-    checking_waybill = State()
-    waybill = State()
-
-
-class AnswerType(Enum):
-    checkbox = 1
-    button = 2
-    text = 3
 
 
 class DefaultResponse(BaseModel):
@@ -115,9 +97,15 @@ class Button(BaseModel):
     name: str | None
 
 
+class AnswerType(str, Enum):
+    checkbox = 'checkbox'
+    button = 'button'
+    text = 'text'
+
+
 class AnswerParam(BaseModel):
-    buttonNumber: int | None
-    buttonArr: list[Button] | None
+    buttonNumber: int | None = None
+    buttonArr: list[Button] | None = None
 
 
 class Question(BaseModel):

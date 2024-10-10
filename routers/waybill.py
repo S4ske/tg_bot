@@ -1,5 +1,6 @@
 from aiogram import Router, F
-from schemas import Menu, Waybill
+from states import Menu
+from schemas import Waybill
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 from api import API
@@ -8,7 +9,7 @@ from utils import waybill_markup, main_keyboard_markup
 router = Router()
 
 
-@router.message(Menu.checking_waybill)
+@router.message(Menu.checking_waybills)
 async def select_waybill(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
     token = data['token']
@@ -22,7 +23,7 @@ async def select_waybill(message: Message, state: FSMContext) -> None:
         await message.answer('У этого задания нет путевого листа')
         return
     waybill_resp = await API.get_waybill(token, calendar_task.idWaybill)
-    if waybill_resp.success:
+    if waybill_resp and waybill_resp.success:
         waybill = waybill_resp.get
         await state.set_state(Menu.waybill)
         await state.update_data(waybill=waybill.model_dump())
@@ -38,7 +39,7 @@ async def waybill_information(message: Message, state: FSMContext):
     await message.answer(str(waybill.model_dump()))
 
 
-@router.message(Menu.checking_waybill, F.text.casefold() == 'назад')
+@router.message(Menu.checking_waybills, F.text.casefold() == 'назад')
 @router.message(Menu.waybill, F.text.casefold() == 'назад')
 async def back(message: Message, state: FSMContext):
     await state.set_state(Menu.main)

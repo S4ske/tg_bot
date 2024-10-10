@@ -4,12 +4,13 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from config import BOT_TOKEN, REDIS_HOST
-from aiogram.filters import CommandStart
+from aiogram.filters import CommandStart, Command
 from aiogram.types import Message, ReplyKeyboardRemove, BotCommand
 from aiogram.fsm.context import FSMContext
-from schemas import Credentials
+from states import Credentials, Menu
 from aiogram.fsm.storage.redis import RedisStorage
-from routers import auth, title, waybill
+from routers import auth, title, waybill, checklist
+from utils import main_keyboard_markup
 
 bot = Bot(BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 main_dispatcher = Dispatcher(storage=RedisStorage(redis=Redis(host=REDIS_HOST)))
@@ -21,9 +22,16 @@ async def start(message: Message, state: FSMContext) -> None:
     await message.answer('Привет! Отправь мне свой логин', reply_markup=ReplyKeyboardRemove())
 
 
+@main_dispatcher.message(Command('main_menu'))
+async def start(message: Message, state: FSMContext) -> None:
+    await state.set_state(Menu.main)
+    await message.answer('Возвращение...', reply_markup=main_keyboard_markup)
+
+
 async def main():
-    await bot.set_my_commands([BotCommand(command='/start', description='Начать работу с ботом')])
-    main_dispatcher.include_routers(auth.router, title.router, waybill.router)
+    await bot.set_my_commands([BotCommand(command='/start', description='Начать работу с ботом'),
+                               BotCommand(command='/main_menu', description='Вернуться в главное меню')])
+    main_dispatcher.include_routers(auth.router, title.router, waybill.router, checklist.router)
     await bot.delete_webhook(drop_pending_updates=True)
     await main_dispatcher.start_polling(bot)
 
