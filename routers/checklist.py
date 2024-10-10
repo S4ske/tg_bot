@@ -47,7 +47,7 @@ async def get_checklists(message: Message, state: FSMContext):
     if not await validate_response(message, checklists_resp):
         return
     checklists = checklists_resp.get
-    await message.answer(f'Контрольные листы для путевого листа {waybill.govNumber} {waybill.date}:',
+    await message.answer(f'Контрольные листы для путевого листа "{waybill.govNumber} {waybill.date}":',
                          reply_markup=get_keyboard_markup_checklists(checklists))
     for checklist in checklists:
         await message.answer(str(checklist.model_dump()))
@@ -97,7 +97,7 @@ async def ask_question(message: Message, question: Question) -> None:
                              reply_markup=get_keyboard_markup_buttons(question.answerParam.buttonArr))
     else:
         await message.answer(question.question, reply_markup=default_checklist_markup)
-        await message.answer('Введите ответ')
+        await message.answer('Введите значаение:')
 
 
 async def start_checklist(message: Message, state: FSMContext) -> bool:
