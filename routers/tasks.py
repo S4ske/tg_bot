@@ -6,7 +6,7 @@ from schemas import Waybill, Task, IntermediateTaskResultIn
 from api import API
 from utils import validate_response, get_keyboard_markup_tasks, waybill_markup, task_markup, get_task_by_id,\
     get_keyboard_markup_results
-from beauty_print import print_task
+from beauty_print import print_task, print_intermediate_task_result
 
 router = Router()
 
@@ -83,7 +83,7 @@ async def results_list(message: Message, state: FSMContext):
         return
     await message.answer('<b>Список результатов:</b>')
     for result in results:
-        await message.answer(str(result.model_dump()))
+        await message.answer(print_intermediate_task_result(result))
 
 
 @router.message(Menu.task, F.text.casefold() == 'завершить/продолжить задачу')

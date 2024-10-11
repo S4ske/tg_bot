@@ -6,6 +6,7 @@ from schemas import Waybill, Checklist, Question, AnswerType
 from api import API
 from utils import get_keyboard_markup_checklists, waybill_markup, get_keyboard_markup_buttons, checkbox_markup, \
     default_checklist_markup, validate_response
+from beauty_print import print_checklist
 
 router = Router()
 
@@ -47,10 +48,10 @@ async def get_checklists(message: Message, state: FSMContext):
     if not await validate_response(message, checklists_resp):
         return
     checklists = checklists_resp.get
-    await message.answer(f'Контрольные листы для путевого листа "{waybill.govNumber} {waybill.date}":',
+    await message.answer(f'Контрольные листы для путевого листа "{waybill.govNumber} <u>{waybill.date[:10]}":</u>',
                          reply_markup=get_keyboard_markup_checklists(checklists))
     for checklist in checklists:
-        await message.answer(str(checklist.model_dump()))
+        await message.answer(print_checklist(checklist))
     await state.set_state(Menu.checking_checklists)
 
 

@@ -1,11 +1,11 @@
-from schemas import CalendarTask, Waybill, Task
+from schemas import CalendarTask, Waybill, Task, IntermediateTaskResult,Checklist
 
 
 def print_calendar_task(calendar_task: CalendarTask) -> str:
     return (f'Задание <b>№{calendar_task.id}</b>\n'
             f"Дата: <u>{calendar_task.calendarDate[:10]}</u>\n"
             f'Продолжительность: {calendar_task.calendarDuration}ч\n'
-            f'Время начала работы: <u>{calendar_task.calendarDate[:10]}</u>\n'
+            f'Время начала работы: <u>{calendar_task.calendarTime[:5]}</u>\n'
             f'Наименование техники: {calendar_task.machine}'
             + ('' if calendar_task.idWaybill else '\n<b>Нет путевого листа</b>'))
 
@@ -31,3 +31,16 @@ def print_task(task: Task) -> str:
             f'Расстояние: {task.distance} км\n'
             f'Перевезти: {task.transported} тонн\n'
             f'Примечание {task.description}')
+
+def print_intermediate_task_result(result: IntermediateTaskResult):
+        return (f'Результат <b>№{result.id}</b>\n'
+            f'Количество ездок: {result.count}\n'
+            f'Время прибытия: <u>{result.arrivalTime}</u>\n'
+            f'Расстояние: {result.distance} км\n'
+            f'Перевезено: {result.transported} т')
+
+def print_checklist(checklist: Checklist):
+        return (f'Контрольный лист <b>№{checklist.checklistWaybillId}</b>\n'
+                f'Название теста: {checklist.name}\n'
+                f'Дата завершения теста: <u>{checklist.dateFinish}</u>\n')
+
