@@ -1,4 +1,4 @@
-from schemas import CalendarTask, Waybill, Task, IntermediateTaskResult,Checklist
+from schemas import CalendarTask, Waybill, Task, IntermediateTaskResult, Checklist
 
 
 def print_calendar_task(calendar_task: CalendarTask) -> str:
@@ -32,15 +32,16 @@ def print_task(task: Task) -> str:
             f'Перевезти: {task.transported} тонн\n'
             f'Примечание {task.description}')
 
-def print_intermediate_task_result(result: IntermediateTaskResult):
-        return (f'Результат <b>№{result.id}</b>\n'
+
+def print_intermediate_task_result(result: IntermediateTaskResult) -> str:
+    return (f'Результат <b>№{result.id}</b>\n'
             f'Количество ездок: {result.count}\n'
             f'Время прибытия: <u>{result.arrivalTime}</u>\n'
             f'Расстояние: {result.distance} км\n'
             f'Перевезено: {result.transported} т')
 
-def print_checklist(checklist: Checklist):
-        return (f'Контрольный лист <b>№{checklist.checklistWaybillId}</b>\n'
-                f'Название теста: {checklist.name}\n'
-                f'Дата завершения теста: <u>{checklist.dateFinish}</u>\n')
 
+def print_checklist(checklist: Checklist) -> str:
+    return (f'Контрольный лист <b>№{checklist.checklistWaybillId}</b>\n'
+            f'Название теста: {checklist.name}\n'
+            f'Дата завершения теста: <u>{checklist.dateFinish}</u>\n')

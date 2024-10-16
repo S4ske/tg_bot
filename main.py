@@ -3,7 +3,7 @@ from redis.asyncio import Redis
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
-from config import BOT_TOKEN, REDIS_HOST
+from config import BOT_TOKEN
 from aiogram.filters import CommandStart, Command
 from aiogram.types import Message, ReplyKeyboardRemove, BotCommand
 from aiogram.fsm.context import FSMContext
@@ -13,7 +13,7 @@ from routers import auth, title, waybill, checklist, tasks
 from utils import main_keyboard_markup
 
 bot = Bot(BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
-main_dispatcher = Dispatcher(storage=RedisStorage(Redis(host=REDIS_HOST)))
+main_dispatcher = Dispatcher(storage=RedisStorage(Redis(host='localhost')))
 
 
 @main_dispatcher.message(CommandStart())

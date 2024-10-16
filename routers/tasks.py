@@ -36,6 +36,9 @@ async def get_tasks(message: Message, state: FSMContext):
     if not await validate_response(message, task_resp):
         return
     tasks = task_resp.task
+    if not tasks:
+        await message.answer('<b>У вас нет задач</b>')
+        return
     await message.answer('<b>Ваши задачи в рамках путевого листа:</b>', reply_markup=get_keyboard_markup_tasks(tasks))
     for task in tasks:
         await message.answer(print_task(task))

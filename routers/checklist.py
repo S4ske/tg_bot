@@ -106,15 +106,18 @@ async def start_checklist(message: Message, state: FSMContext) -> bool:
     token = data['token']
     waybill = Waybill(**data['waybill'])
     checklist = Checklist(**data['checklist'])
+    if not checklist.checklistWaybillId:
+        start_resp = await API.start_checklist(token, waybill.id, checklist.id)
+        if not await validate_response(message, start_resp):
+            return False
+        checklist.checklistWaybillId = start_resp.get
+        await state.update_data(checklist=checklist)
     questions_resp = await API.get_checklist_questions(token, waybill.id, checklist.checklistWaybillId)
     questions = questions_resp.get
     questions_dump = list(map(lambda x: x.model_dump(), questions))
     await state.update_data(questions=questions_dump)
     question_num = 0
     await state.update_data(question_num=question_num)
-    start_resp = await API.start_checklist(token, waybill.id, checklist.checklistWaybillId)
-    if not await validate_response(message, start_resp):
-        return False
     await state.set_state(Menu.checklist)
     return True
 
