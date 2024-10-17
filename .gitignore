@@ -162,5 +162,4 @@ cython_debug/
 .idea/
 
 data/
-redis.conf/
-.conf
+redis.conf
