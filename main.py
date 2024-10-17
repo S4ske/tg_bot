@@ -13,7 +13,7 @@ from routers import auth, title, waybill, checklist, tasks
 from utils import main_keyboard_markup
 
 bot = Bot(BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
-main_dispatcher = Dispatcher(storage=RedisStorage(Redis(host='localhost')))
+main_dispatcher = Dispatcher(storage=RedisStorage(Redis(host='redis')))
 
 
 @main_dispatcher.message(CommandStart())
@@ -24,6 +24,10 @@ async def start(message: Message, state: FSMContext) -> None:
 
 @main_dispatcher.message(Command('main_menu'))
 async def start(message: Message, state: FSMContext) -> None:
+    curr_state = await state.get_state()
+    if curr_state in ['Credentials:login', 'Credentials:password']:
+        await message.answer('Вы не авторизованы')
+        return
     await state.set_state(Menu.main)
     await message.answer('Возвращение...', reply_markup=main_keyboard_markup)
 

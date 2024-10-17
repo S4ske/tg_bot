@@ -75,7 +75,7 @@ async def start_work(message: Message, state: FSMContext):
     except:
         await message.answer('Введите корректное число')
         return
-    if not validate_response(message, start_resp):
+    if not await validate_response(message, start_resp):
         return
     await message.answer('Работа начата', reply_markup=waybill_markup)
     await state.set_state(Menu.waybill)

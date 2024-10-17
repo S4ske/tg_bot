@@ -22,7 +22,8 @@ class API:
             return None
 
     @staticmethod
-    async def _send_request(method: Callable, request: str, body: dict[str, Any] = None, headers: dict[str, Any] = None,
+    async def _send_request(method: Callable, request: str, body: dict[str, Any] | None = None,
+                            headers: dict[str, Any] = None,
                             params: dict[str, Any] = None) -> RawResponse:
         body = body if body else dict()
         headers = headers if headers else dict()

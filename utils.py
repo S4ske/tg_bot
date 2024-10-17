@@ -42,7 +42,7 @@ def get_keyboard_markup_calendar_tasks(tasks: list[CalendarTask]) -> ReplyKeyboa
 
 
 def get_keyboard_markup_checklists(checklists: list[Checklist]) -> ReplyKeyboardMarkup:
-    return ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text=str(checklist.checklistWaybillId))]
+    return ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text=str(checklist.id))]
                                          for checklist in checklists] + [[KeyboardButton(text='Назад')]])
 
 

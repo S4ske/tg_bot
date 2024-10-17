@@ -62,7 +62,7 @@ async def get_questions(message: Message, state: FSMContext):
     waybill = Waybill(**data['waybill'])
     checklists_resp = await API.get_checklists(token, waybill.id)
     try:
-        checklist = list(filter(lambda x: x.checklistWaybillId == int(message.text), checklists_resp.get))[0]
+        checklist = list(filter(lambda x: x.id == int(message.text), checklists_resp.get))[0]
     except:
         await message.answer('Введите номер существующего контрольного листа')
         return

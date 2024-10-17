@@ -42,6 +42,6 @@ def print_intermediate_task_result(result: IntermediateTaskResult) -> str:
 
 
 def print_checklist(checklist: Checklist) -> str:
-    return (f'Контрольный лист <b>№{checklist.checklistWaybillId}</b>\n'
+    return (f'Контрольный лист <b>№{checklist.id}</b>\n'
             f'Название теста: {checklist.name}\n'
             f'Дата завершения теста: <u>{checklist.dateFinish}</u>\n')
