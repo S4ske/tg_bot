@@ -1,8 +1,9 @@
-from pydantic import BaseModel
-from typing import TypeVar, Generic
 from enum import Enum
+from typing import Generic, TypeVar
 
-T = TypeVar('T')
+from pydantic import BaseModel
+
+T = TypeVar("T")
 
 
 class DefaultResponse(BaseModel):
@@ -28,7 +29,7 @@ class UserInfo(BaseModel):
 
 
 class CalendarTask(BaseModel):
-    '''
+    """
     Attributes:
         calendarDate: дата
         calendarDuration: продолжительность в часах
@@ -38,7 +39,8 @@ class CalendarTask(BaseModel):
         link: ссылка для доступа к путевому листу
         machine: наименование техники
         pswd: пароль для доступу к путевому листу
-    '''
+    """
+
     calendarDate: str | None
     calendarDuration: int | None
     calendarTime: str | None
@@ -50,7 +52,7 @@ class CalendarTask(BaseModel):
 
 
 class Waybill(BaseModel):
-    '''
+    """
     Attributes:
         date
         dateEnd
@@ -64,7 +66,8 @@ class Waybill(BaseModel):
         model: наименование техники
         time: начало работы время, example: 07:00:00
         typeM: тип техники
-    '''
+    """
+
     date: str | None
     dateEnd: str | None
     dateStart: str | None
@@ -80,13 +83,14 @@ class Waybill(BaseModel):
 
 
 class Checklist(BaseModel):
-    '''
+    """
     Attributes:
         checklistWaybillId
         dateFinish: дата завершения теста, если тест пройден иначе null
         id
         name
-    '''
+    """
+
     checklistWaybillId: int | None
     dateFinish: str | None
     id: int | None
@@ -98,9 +102,9 @@ class Button(BaseModel):
 
 
 class AnswerType(str, Enum):
-    checkbox = 'checkbox'
-    button = 'button'
-    text = 'text'
+    checkbox = "checkbox"
+    button = "button"
+    text = "text"
 
 
 class AnswerParam(BaseModel):
