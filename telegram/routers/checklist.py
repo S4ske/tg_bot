@@ -146,7 +146,7 @@ async def start_checklist(message: Message, state: FSMContext) -> bool:
         if not await validate_response(message, start_resp):
             return False
         checklist.checklistWaybillId = start_resp.get
-        await state.update_data(checklist=checklist)
+        await state.update_data(checklist=checklist.model_dump())
     questions_resp = await API.get_checklist_questions(
         token, waybill.id, checklist.checklistWaybillId
     )

@@ -14,10 +14,15 @@ router = Router()
 
 @router.message(Menu.checking_waybills, F.text.casefold() == "назад")
 @router.message(Menu.waybill, F.text.casefold() == "назад")
+async def back_to_main_menu(message: Message, state: FSMContext):
+    await state.set_state(Menu.main)
+    await message.answer("Возвращение...", reply_markup=main_keyboard_markup)
+
+
 @router.message(Menu.starting_work, F.text.casefold() == "назад")
 @router.message(Menu.stopping_work, F.text.casefold() == "назад")
-async def back(message: Message, state: FSMContext):
-    await state.set_state(Menu.main)
+async def back_to_waybill(message: Message, state: FSMContext):
+    await state.set_state(Menu.waybill)
     await message.answer("Возвращение...", reply_markup=main_keyboard_markup)
 
 
@@ -30,7 +35,7 @@ async def select_waybill(message: Message, state: FSMContext) -> None:
         calendar_task = list(
             filter(lambda x: x.id == int(message.text), calendar_tasks_resp.get)
         )[0]
-    except IndexError:
+    except (IndexError, ValueError):
         await message.answer("Введите номер существующего задания")
         return
     if not calendar_task.idWaybill:

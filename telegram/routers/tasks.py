@@ -65,7 +65,7 @@ async def check_task(message: Message, state: FSMContext):
     tasks = task_resp.task
     try:
         task = list(filter(lambda x: x.id == int(message.text), tasks))[0]
-    except IndexError:
+    except (IndexError, ValueError):
         await message.answer("Введите номер существующей задачи")
         return
     await message.answer(f"Вы выбрали задачу №{task.id}", reply_markup=task_markup)
