@@ -19,7 +19,7 @@ async def login(message: Message, state: FSMContext) -> None:
 
 
 @router.message(Credentials.password)
-async def password(message: Message, state: FSMContext) -> None:
+async def check_password(message: Message, state: FSMContext) -> None:
     await state.update_data(password=message.text)
     data = await state.get_data()
     login_response = await API.login(data["login"], data["password"])

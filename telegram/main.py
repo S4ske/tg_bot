@@ -29,7 +29,7 @@ async def start(message: Message, state: FSMContext) -> None:
 @main_dispatcher.message(Command("main_menu"))
 async def to_main_menu(message: Message, state: FSMContext) -> None:
     curr_state = await state.get_state()
-    if curr_state in ["Credentials:login", "Credentials:password"]:
+    if not curr_state.startswith("Menu"):
         await message.answer("Вы не авторизованы")
         return
     await state.set_state(Menu.main)
