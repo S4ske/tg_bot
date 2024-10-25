@@ -31,6 +31,8 @@ async def select_waybill(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
     token = data["token"]
     calendar_tasks_resp = await API.get_calendar_tasks(token)
+    if not await validate_response(message, calendar_tasks_resp):
+        return
     try:
         calendar_task = list(
             filter(lambda x: x.id == int(message.text), calendar_tasks_resp.get)
